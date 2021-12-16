@@ -20,6 +20,7 @@ public class ToyBoatEngine extends EngineBase {
     protected void run() {
         // -------------------------------------------------
         // Set which files to record to
+        // -------------------------------------------------
         waveFile = new File("examples/toy_engine.wav");
         recorder = null;
 
