@@ -4,8 +4,13 @@ import com.jsyn.Synthesizer;
 import com.jsyn.unitgen.LineOut;
 import com.jsyn.unitgen.Multiply;
 import com.jsyn.util.WaveRecorder;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 public abstract class EngineBase {
@@ -16,6 +21,25 @@ public abstract class EngineBase {
     protected File waveFile;
     protected WaveRecorder recorder;
     protected Multiply mpOut;
+
+    protected void readParameters(String fileName) {
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader(fileName))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONObject parameters = (JSONObject) obj;
+
+            parseJSON(parameters);
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected abstract void parseJSON(JSONObject engine);
 
     protected abstract void run();
 
@@ -31,7 +55,7 @@ public abstract class EngineBase {
 
         do {
             try {
-                synth.sleepFor(5.0);
+                synth.sleepFor(15.0);
             } catch (InterruptedException e) {
             }
         } while (!isFinished());

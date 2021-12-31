@@ -1,0 +1,25 @@
+{
+  "speed": 0.6,
+
+  "overtoneFrequency1": 0.4,
+  "overtoneFrequency2": 0.5,
+  "overtoneFrequency3": 0.6,
+
+  "overtoneAmplitude1": 0.02,
+  "overtoneAmplitude2": 0.15,
+  "overtoneAmplitude3": 0.1,
+
+  "overtonePhase1": 0.2,
+  "overtonePhase2": 0.3,
+  "overtonePhase3": 0.45,
+
+  "transmissionDelay1": 0.15,
+  "transmissionDelay2": 0.3,
+  "transmissionDelay3": 0.45,
+
+  "warpDelay": 0.25,
+  "waveguideWrapping": 0.1,
+
+  "parabolaDelay": 0.2,
+  "mixParabola": 0.8
+}

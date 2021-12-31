@@ -3,6 +3,7 @@ package esg.Engines;
 import com.jsyn.JSyn;
 import com.jsyn.unitgen.*;
 import com.jsyn.util.WaveRecorder;
+import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,8 +17,22 @@ public class ToyBoatEngine extends EngineBase {
         new ToyBoatEngine().run();
     }
 
+    int fundamentalFrequency;
+
+    @Override
+    protected void parseJSON(JSONObject engine) {
+        fundamentalFrequency = ((Long)engine.get("fundamentalFrequency")).intValue();
+    }
+
     @Override
     protected void run() {
+        // -------------------------------------------------
+        // Read parameters
+        // -------------------------------------------------
+
+        this.readParameters("./example-parameters/ToyBoatEngineParameters.json");
+
+
         // -------------------------------------------------
         // Set which files to record to
         // -------------------------------------------------
@@ -57,7 +72,7 @@ public class ToyBoatEngine extends EngineBase {
 
 
         // Add an oscillator
-        SineOscillator so1 = new SineOscillator(9);
+        SineOscillator so1 = new SineOscillator(fundamentalFrequency);
         synth.add(so1);
         so1.amplitude.set(1.0);
 
@@ -75,22 +90,22 @@ public class ToyBoatEngine extends EngineBase {
         multiply1.inputB.set(600);
 
 
-        // Preform clipping by moving it down by one
-        // then moving back up, effectively cutting out
-        // the signal bellow amplitude 0
-        Add adderClip1 = new Add();
-        adderClip1.inputA.connect(multiply1.output);
-        adderClip1.inputB.set(-1);
+        // Preform clipping between 0 and 1
+        Minimum min;
+        synth.add(min = new Minimum());
+        min.inputA.connect(multiply1.output);
+        min.inputB.set(1.0);
 
-        Add adderClip2 = new Add();
-        adderClip2.inputA.connect(adderClip1.output);
-        adderClip2.inputB.set(1);
+        Maximum max;
+        synth.add(max = new Maximum());
+        max.inputA.connect(min.output);
+        max.inputB.set(0);
 
 
         // First high pass filter
         FilterHighPass hp1 = new FilterHighPass();
         synth.add(hp1);
-        adderClip2.output.connect(hp1.input);
+        max.output.connect(hp1.input);
         hp1.frequency.set(10);
 
         // First low pass filter
@@ -167,7 +182,7 @@ public class ToyBoatEngine extends EngineBase {
         // volume for that purpose
         mpOut = new Multiply();
         mpOut.inputA.connect(multiply3.output);
-        mpOut.inputB.set(0.01);
+        mpOut.inputB.set(10); // Volume
 
         outputAndSave();
     }
